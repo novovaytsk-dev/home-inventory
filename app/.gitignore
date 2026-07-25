@@ -1,0 +1,41 @@
+# Виртуальное окружение Python
+venv/
+env/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Файлы окружения (содержат пароли и ключи)
+.env
+.env.local
+.env.*.local
+
+# База данных SQLite (если используется для тестов)
+*.db
+*.sqlite3
+
+# Папка миграций (если не хотите хранить) — обычно хранят, но осторожно с alembic/versions
+# alembic/versions/
+
+# Кэш и IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+docker-compose.override.yml
+
+# Логи
+*.log
+
+# pytest
+.pytest_cache/
+
+# Celery
+celerybeat-schedule
