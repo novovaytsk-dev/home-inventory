@@ -11,7 +11,7 @@ class Batch(Base):
     quantity_remaining = Column(Float, nullable=False)
     purchased_at = Column(DateTime, default=datetime.datetime.utcnow)
     expires_at = Column(DateTime, nullable=True)
-    storage_location = Column(String, nullable=True)  # fridge, freezer, cupboard, pantry, bathroom, other
+    storage_location = Column(String, nullable=True)
     price = Column(Float, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

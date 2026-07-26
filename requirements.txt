@@ -1,0 +1,15 @@
+﻿fastapi
+uvicorn[standard]
+sqlalchemy
+asyncpg
+alembic
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+redis
+celery
+pytest
+pytest-asyncio
+httpx
+pydantic-settings
+aiosqlite
