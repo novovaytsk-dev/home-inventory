@@ -1,10 +1,18 @@
 import pytest_asyncio
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
 from app.core.database import Base, get_db
+
+# Явно импортируем все модели, чтобы их таблицы попали в metadata
+from app.models.user import User
+from app.models.product import Product
+from app.models.batch import Batch
+from app.models.operation import Operation
+from app.models.notification import Notification
+from app.models.shopping_list import ShoppingListItem
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 engine = create_async_engine(TEST_DATABASE_URL, echo=False)
@@ -26,12 +34,12 @@ async def setup_db():
 
 @pytest_asyncio.fixture
 async def client():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
 
 @pytest_asyncio.fixture
 async def auth_headers(client: AsyncClient):
-    """Фикстура для получения авторизованных заголовков."""
     await client.post("/auth/register", json={
         "email": "stock@test.com",
         "password": "test"

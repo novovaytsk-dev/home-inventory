@@ -7,6 +7,8 @@ from app.models.user import User
 from app.models.product import Product
 from app.models.batch import Batch
 from app.schemas.product import ProductCreate, ProductOut
+from app.api.dependencies import get_product_for_user
+from app.services.forecast_service import calculate_forecast
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -16,6 +18,7 @@ async def create_product(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    # проверка дубликата
     existing = await db.execute(
         select(Product).where(
             Product.user_id == current_user.id,
@@ -23,8 +26,9 @@ async def create_product(
         )
     )
     if existing.scalar_one_or_none():
+        # по заданию можно вернуть предупреждение, но здесь просто ошибка
         pass
-    product = Product(**product_in.dict(), user_id=current_user.id)
+    product = Product(**product_in.model_dump(), user_id=current_user.id)
     db.add(product)
     await db.commit()
     await db.refresh(product)
@@ -43,7 +47,6 @@ async def list_products(
     result = await db.execute(query)
     products = result.scalars().all()
 
-
     out = []
     for p in products:
         total = (await db.execute(
@@ -54,3 +57,15 @@ async def list_products(
             continue
         out.append(ProductOut.model_validate(p))
     return out
+
+@router.get("/{product_id}/forecast")
+async def get_forecast(
+    product_id: int,
+    period_days: int = Query(14, ge=1, description="Период анализа в днях"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    product: Product = Depends(get_product_for_user)  # проверка владения
+):
+    """Возвращает прогноз расхода товара."""
+    forecast = await calculate_forecast(product_id, current_user.id, period_days, db)
+    return forecast

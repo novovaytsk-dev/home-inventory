@@ -5,6 +5,7 @@ asyncpg
 alembic
 python-jose[cryptography]
 passlib[bcrypt]
+bcrypt==4.1.2
 python-multipart
 redis
 celery

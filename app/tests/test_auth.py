@@ -38,7 +38,6 @@ async def test_me(client: AsyncClient):
         "password": "pass"
     })
     token = login_res.json()["access_token"]
-
     response = await client.get("/auth/me", headers={
         "Authorization": f"Bearer {token}"
     })
